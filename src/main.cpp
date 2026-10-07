@@ -43,7 +43,7 @@ int main() {
     std::uniform_int_distribution<int> pick{ 0, 1 };
 
     std::cout << std::format("{:=<55}\n", "");
-    std::cout << " Agent Benchmark — Simple Reflex vs Model-Based\n";
+    std::cout << " Agent Benchmark | Simple Reflex vs Model-Based\n";
     std::cout << std::format("{:=<55}\n", "");
 
     int simple_wins = 0, model_wins = 0, ties = 0;

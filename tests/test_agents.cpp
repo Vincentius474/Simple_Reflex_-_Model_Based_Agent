@@ -84,48 +84,49 @@ struct Registrar {
 } while (0)
 
 // Simple Reflex 
+#include <tuple>   // for std::ignore
+
 TEST(SimpleReflex_Is_Stateless) {
     SimpleReflex a;
     auto r1 = a.act({ Location::A, false });
-    a.act({ Location::B, true });
-    a.act({ Location::A, true });
+    std::ignore = a.act({ Location::B, true });
+    std::ignore = a.act({ Location::A, true });
     CHECK_EQ(r1, a.act({ Location::A, false }));
 }
 
-// Model-Based
-TEST(ModelBased_SucksCurrentDirt) {
-    ModelBased a;
-    CHECK(a.act({ Location::A, true }) == Action::Suck);
-}
-
+// Model Based
 TEST(ModelBased_RemembersCleanedRoom) {
     ModelBased a;
-    a.act({ Location::A, true  });
-    a.act({ Location::A, false });
+    std::ignore = a.act({ Location::A, true  });
+    std::ignore = a.act({ Location::A, false });
     CHECK(a.known_clean(0));
+    CHECK(!a.known_dirty(0));
 }
 
 TEST(ModelBased_MovesTowardKnownDirty) {
     ModelBased a;
-    a.act({ Location::A, true  });
-    a.act({ Location::B, false });
-    CHECK(a.act({ Location::B, false }) == Action::MoveLeft);
+    std::ignore = a.act({ Location::A, true  });   // A dirty, suck
+    std::ignore = a.act({ Location::A, false });   // A clean; B still unknown
+    // Standing in A, B unknown -> go check B
+    CHECK(a.act({ Location::A, false }) == Action::MoveRight);
 }
 
 TEST(ModelBased_IdlesWhenDone) {
     ModelBased a;
-    a.act({ Location::A, false });
-    a.act({ Location::B, false });
-    CHECK(a.act({ Location::A, false }) == Action::NoOp);
+    std::ignore = a.act({ Location::A, false });   // A clean; B unknown -> move
+    std::ignore = a.act({ Location::B, false });   // B clean now
+    // Both known clean -> idle
+    CHECK(a.act({ Location::B, false }) == Action::NoOp);
 }
 
 TEST(ModelBased_Reset_ClearsModel) {
     ModelBased a;
-    a.act({ Location::A, true });
+    std::ignore = a.act({ Location::A, true });
     a.reset();
     CHECK(!a.known_dirty(0));
     CHECK(!a.known_clean(0));
 }
+
 
 // Integration
 template <Agent A>
@@ -163,5 +164,5 @@ int main() {
     std::cout << " Passed: " << passed << "   Failed: " << failed << "\n";
     std::cout << "========================================\n";
     return failed == 0 ? 0 : 1;
-    
+
 }

@@ -35,7 +35,7 @@ ctest --test-dir build --output-on-failure   # unit tests
 
 ```
 =======================================================
- Agent Benchmark — Simple Reflex vs Model-Based
+ Agent Benchmark - Simple Reflex vs Model-Based
 =======================================================
 
 Trial  1  [A:dirty  B:clean  start:B]
